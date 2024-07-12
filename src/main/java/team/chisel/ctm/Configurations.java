@@ -16,7 +16,7 @@ public class Configurations {
     public static final Configurations INSTANCE = new Configurations();
 
     public static void register(ModContainer modContainer, IEventBus modBus) {
-        modContainer.addConfig(new ModConfig(Type.CLIENT, INSTANCE.configSpec, modContainer, "ctm.toml"));
+        modContainer.registerConfig(Type.CLIENT, INSTANCE.configSpec, "ctm.toml");
         modBus.addListener(ModConfigEvent.Reloading.class, event -> {
             if (event.getConfig().getModId().equals(CTM.MOD_ID)) {
                 //Only reload when our config changes

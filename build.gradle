@@ -3,14 +3,14 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'org.ajoberstar.grgit.service' version '5.2.2'
-    id 'net.neoforged.gradle.userdev' version '7.0.142'//https://projects.neoforged.net/neoforged/neogradle
+    id 'net.neoforged.gradle.userdev' version '7.0.154'//https://projects.neoforged.net/neoforged/neogradle
     id 'io.freefair.lombok' version '8.6'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
 tasks.named('wrapper', Wrapper).configure {
     //Define wrapper values here so as to not have to always do so when updating gradlew.properties
-    gradleVersion = '8.8'
+    gradleVersion = '8.9'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -35,10 +35,10 @@ runs {
         if (hasProperty('forge_force_ansi')) {
             //Force ansi if declared as a gradle variable, as the auto detection doesn't detect IntelliJ properly
             // or eclipse's plugin that adds support for ansi escape in console
-            jvmArguments.add("-Dterminal.ansi=${property('forge_force_ansi')}")
+            systemProperties.put('terminal.ansi', (String) property('forge_force_ansi'))
         }
 
-        modSources(sourceSets.main, sourceSets.test)
+        modSources.add((SourceSet[]) [sourceSets.main, sourceSets.test])
 
         // Recommended logging level for the console
         systemProperties.put('forge.logging.console.level', 'debug')

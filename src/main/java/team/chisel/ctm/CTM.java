@@ -49,8 +49,15 @@ public class CTM {
         TextureTypeRegistry.scan();
 
         definitionManager = new CTMDefinitionManager();
-        ReloadableResourceManager resourceManager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
-        resourceManager.registerReloadListener(definitionManager.getReloadListener());
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft != null) {
+            //TODO
+            // Note: This can be null in datagen. We just skip adding the definition manager, as resources don't actually need
+            // to be loaded in datagen. Once: https://github.com/neoforged/NeoForge/pull/1289 is merged, we should move to using
+            // that instead
+            ReloadableResourceManager resourceManager = (ReloadableResourceManager) minecraft.getResourceManager();
+            resourceManager.registerReloadListener(definitionManager.getReloadListener());
+        }
         reloadListener = new CTMPackReloadListener();
         modBus.addListener(this::reloadListenersLate);
     }
