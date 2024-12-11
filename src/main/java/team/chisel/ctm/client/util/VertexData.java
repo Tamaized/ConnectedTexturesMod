@@ -114,14 +114,15 @@ public class VertexData {
     }
 
     public void write(VertexConsumer consumer) {
-        consumer.addVertex(posX, posY, posZ);
-        consumer.setColor(red, green, blue, alpha);
-        consumer.setUv(texU, texV);
-        consumer.setUv1(overlayU, overlayV);
-        consumer.setUv2(lightU, lightV);
-        consumer.setNormal(normalX, normalY, normalZ);
+        consumer.vertex(posX, posY, posZ);
+        consumer.color(red, green, blue, alpha);
+        consumer.uv(texU, texV);
+        consumer.overlayCoords(overlayU, overlayV);
+        consumer.uv2(lightU, lightV);
+        consumer.normal(normalX, normalY, normalZ);
         for (Map.Entry<VertexFormatElement, int[]> entry : miscData.entrySet()) {
             consumer.misc(entry.getKey(), entry.getValue());
         }
+        consumer.endVertex();
     }
 }

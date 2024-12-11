@@ -51,7 +51,7 @@ public interface IMetadataSectionCTM {
         IMetadataSectionCTM meta = this;
         boolean hasProxy = getProxy() != null;
         if (hasProxy) {
-            TextureAtlasSprite proxySprite = bakedTextureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(getProxy())));
+            TextureAtlasSprite proxySprite = bakedTextureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(getProxy())));
             try {
                 meta = ResourceUtil.getMetadata(proxySprite).orElse(new V1());
                 sprite = proxySprite;
@@ -132,7 +132,7 @@ public interface IMetadataSectionCTM {
                     for (int i = 0; i < texturesArr.size(); i++) {
                         JsonElement e = texturesArr.get(i);
                         if (e.isJsonPrimitive() && e.getAsJsonPrimitive().isString()) {
-                            ret.additionalTextures[i] = ResourceLocation.parse(e.getAsString());
+                            ret.additionalTextures[i] = new ResourceLocation(e.getAsString());
                         }
                     }
                 }

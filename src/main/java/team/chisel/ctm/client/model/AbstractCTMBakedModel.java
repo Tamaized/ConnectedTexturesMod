@@ -14,8 +14,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.neoforged.neoforge.client.RenderTypeHelper;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import net.minecraftforge.client.RenderTypeHelper;
+import net.minecraftforge.client.model.BakedModelWrapper;
 
 import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
@@ -48,9 +48,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.minecraftforge.client.ChunkRenderTypeSet;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.chisel.ctm.api.model.IModelCTM;
@@ -84,7 +84,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
         @SneakyThrows
         public BakedModel resolve(BakedModel originalModel, ItemStack stack, ClientLevel world, LivingEntity entity, int unknown) {
             ModelResourceLocation mrl = ModelUtil.getMesh(stack);
-            if (mrl == ModelBakery.MISSING_MODEL_VARIANT) {
+            if (mrl == ModelBakery.MISSING_MODEL_LOCATION) {
                 // this must be a missing/invalid model
                 return Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getModelManager().getMissingModel();
             }
@@ -257,7 +257,7 @@ public abstract class AbstractCTMBakedModel extends BakedModelWrapper<BakedModel
         if (getParent() instanceof WeightedBakedModel weightedBakedModel) {
             Optional<WeightedEntry.Wrapper<BakedModel>> model = WeightedRandom.getWeightedItem(weightedBakedModel.list, Math.abs((int)rand.nextLong()) % weightedBakedModel.totalWeight);
             if (model.isPresent()) {
-                return model.get().data();
+                return model.get().getData();
             }
         }
         return getParent();

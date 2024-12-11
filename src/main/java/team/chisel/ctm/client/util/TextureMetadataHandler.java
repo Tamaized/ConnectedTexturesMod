@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 
 import com.google.common.collect.HashMultimap;
@@ -22,10 +21,10 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.jetbrains.annotations.NotNull;
 import team.chisel.ctm.CTM;
 import team.chisel.ctm.client.model.AbstractCTMBakedModel;
@@ -36,7 +35,7 @@ public enum TextureMetadataHandler {
 
     INSTANCE;
 
-	private final Object2BooleanMap<ModelResourceLocation> wrappedModels = new Object2BooleanLinkedOpenHashMap<>();
+	private final Object2BooleanMap<ResourceLocation> wrappedModels = new Object2BooleanLinkedOpenHashMap<>();
     private final Multimap<ResourceLocation, Material> scrapedTextures = HashMultimap.create();
 
     public void textureScraped(ResourceLocation modelLocation, Material material) {
@@ -110,9 +109,9 @@ public enum TextureMetadataHandler {
     @SneakyThrows
     public void onModelBake(ModelEvent.ModifyBakingResult event) {
         ModelBakery modelBakery = event.getModelBakery();
-        for (Map.Entry<ModelResourceLocation, BakedModel> entry : event.getModels().entrySet()) {
-            ModelResourceLocation mrl = entry.getKey();
-            UnbakedModel rootModel = modelBakery.topLevelModels.get(mrl);
+        for (Map.Entry<ResourceLocation, BakedModel> entry : event.getModels().entrySet()) {
+            ResourceLocation rl = entry.getKey();
+            UnbakedModel rootModel = modelBakery.getModel(rl);
             if (rootModel != null) {
             	BakedModel baked = entry.getValue();
             	if (baked instanceof AbstractCTMBakedModel) {
@@ -123,10 +122,9 @@ public enum TextureMetadataHandler {
             	}
                 Deque<ResourceLocation> dependencies = new ArrayDeque<>();
                 Set<ResourceLocation> seenModels = new HashSet<>();
-                ResourceLocation rl = mrl.id();
                 dependencies.push(rl);
                 seenModels.add(rl);
-                boolean shouldWrap = wrappedModels.getOrDefault(mrl, false);
+                boolean shouldWrap = wrappedModels.getOrDefault(rl, false);
                 // Breadth-first loop through dependencies, exiting as soon as a CTM texture is found, and skipping duplicates/cycles
                 while (!shouldWrap && !dependencies.isEmpty()) {
                     ResourceLocation dep = dependencies.pop();
@@ -160,7 +158,7 @@ public enum TextureMetadataHandler {
                         CTM.logger.error(new ParameterizedMessage("Error loading model dependency {} for model {}. Skipping...", dep, rl), e);
                     }
                 }
-                wrappedModels.put(mrl, shouldWrap);
+                wrappedModels.put(rl, shouldWrap);
                 if (shouldWrap) {
                     try {
                         entry.setValue(wrap(rootModel, baked));
@@ -188,7 +186,7 @@ public enum TextureMetadataHandler {
                     baked.getModel() instanceof ModelCTM ctmModel && 
                     !ctmModel.isInitialized()) {
                 var baker = event.getModelBakery().new ModelBakerImpl((rl, m) -> m.sprite(), e.getKey());
-                ctmModel.bake(baker, Material::sprite, BlockModelRotation.X0_Y0);
+                ctmModel.bake(baker, Material::sprite, BlockModelRotation.X0_Y0, e.getKey());
                 //Note: We have to clear the cache after baking each model to ensure that we can initialize and capture any textures
                 // that might be done by parent models
                 cache.clear();

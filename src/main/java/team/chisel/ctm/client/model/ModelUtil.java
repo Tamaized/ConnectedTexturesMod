@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.RegistryAwareItemModelShaper;
+import net.minecraftforge.client.model.ForgeItemModelShaper;
 
 @UtilityClass
 public class ModelUtil {
@@ -23,10 +23,10 @@ public class ModelUtil {
     @SneakyThrows
     public static ModelResourceLocation getMesh(ItemStack stack) {
         ItemModelShaper shaper = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
-        if (shaper instanceof RegistryAwareItemModelShaper registryAwareShaper) {
+        if (shaper instanceof ForgeItemModelShaper registryAwareShaper) {
             return registryAwareShaper.getLocation(stack);
         }
-        return ModelBakery.MISSING_MODEL_VARIANT;
+        return ModelBakery.MISSING_MODEL_LOCATION;
     }
 
 }

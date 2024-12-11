@@ -58,7 +58,7 @@ public class CTMDefinitionManager {
                         var json = GsonHelper.fromJson(gson, r, JsonObject.class);
                         profiler.popPush("parsing");
                         var dataresult = CTMLogicDefinition.CODEC.parse(ops, json);
-                        ret.put(id, dataresult.getOrThrow());
+                        ret.put(id, dataresult.get().orThrow());
                     } catch (Exception e) {
                         log.error("Failed to read CTM definition: {}", id, e);
                     } finally {
@@ -139,6 +139,6 @@ public class CTMDefinitionManager {
         var json = GsonHelper.fromJson(gson, r, JsonObject.class);
         var ops = JsonOps.INSTANCE;
         var dataresult = CTMLogicDefinition.CODEC.parse(ops, json);
-        return createBakery(dataresult.getOrThrow()).bake();
+        return createBakery(dataresult.get().orThrow()).bake();
     }
 }

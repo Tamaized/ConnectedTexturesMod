@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class ProfileUtil {
     
     private static final ThreadLocal<ProfilerFiller> profiler = ThreadLocal.withInitial(() -> {
-        if (Thread.currentThread().threadId() == 1) {
+        if (Thread.currentThread().getId() == 1) {
             return Minecraft.getInstance().getProfiler();
         } else {
             return InactiveProfiler.INSTANCE;

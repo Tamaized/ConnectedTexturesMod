@@ -132,7 +132,7 @@ public class BlockstatePredicateParser {
         public Predicate<BlockState> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (json.isJsonObject()) {
                 JsonObject obj = json.getAsJsonObject();
-                Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(GsonHelper.getAsString(obj, "block")));
+                Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(GsonHelper.getAsString(obj, "block")));
                 if (block == Blocks.AIR) {
                     return EMPTY;
                 }
@@ -172,7 +172,7 @@ public class BlockstatePredicateParser {
                         predicates.add(p);
                     }
                 }
-                return predicates.isEmpty() ? EMPTY : predicates.size() == 1 ? predicates.getFirst() : new PredicateComposition(Composition.OR, predicates);
+                return predicates.isEmpty() ? EMPTY : predicates.size() == 1 ? predicates.get(0) : new PredicateComposition(Composition.OR, predicates);
             }
             throw new JsonSyntaxException("Predicate deserialization expects an object or an array. Found: " + json);
         }

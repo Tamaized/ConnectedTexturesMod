@@ -23,7 +23,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.phys.Vec2;
-import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
+import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import team.chisel.ctm.api.texture.ISubmap;
 
 @ParametersAreNonnullByDefault
@@ -455,7 +455,7 @@ public class Quad {
     
     @SuppressWarnings("null")
     public BakedQuad rebake() {
-        var builder = new QuadBakingVertexConsumer();
+        var builder = new QuadBakingVertexConsumer.Buffered();
         builder.setDirection(this.builder.quadOrientation);
         builder.setTintIndex(this.builder.quadTint);
         builder.setShade(this.builder.applyDiffuseLighting);
@@ -465,7 +465,7 @@ public class Quad {
             vertex.write(builder);
         }
 
-        return builder.bakeQuad();
+        return builder.getQuad();
     }
     
     public Quad transformUVs(TextureAtlasSprite sprite) {
@@ -553,50 +553,65 @@ public class Quad {
 
         @NotNull
         @Override
-        public VertexConsumer addVertex(float x, float y, float z) {
+        public VertexConsumer vertex(double x, double y, double z) {
             if (building) {
                 if (++vertexIndex > 4) {
                     throw new IllegalStateException("Expected quad export after fourth vertex");
                 }
             }
             building = true;
-            vertices[vertexIndex] = new VertexData().pos(x, y, z);
+            vertices[vertexIndex] = new VertexData().pos((float) x, (float) y, (float) z);
             return this;
         }
 
         @NotNull
         @Override
-        public VertexConsumer setColor(int red, int green, int blue, int alpha) {
+        public VertexConsumer color(int red, int green, int blue, int alpha) {
             vertices[vertexIndex].color(red, green, blue, alpha);
             return this;
         }
 
         @NotNull
         @Override
-        public VertexConsumer setUv(float u, float v) {
+        public VertexConsumer uv(float u, float v) {
             vertices[vertexIndex].texRaw(u, v);
             return this;
         }
 
         @NotNull
         @Override
-        public VertexConsumer setUv1(int u, int v) {
+        public VertexConsumer overlayCoords(int u, int v) {
             vertices[vertexIndex].overlay(u, v);
             return this;
         }
 
         @NotNull
         @Override
-        public VertexConsumer setUv2(int u, int v) {
+        public VertexConsumer uv2(int u, int v) {
             vertices[vertexIndex].lightRaw(u, v);
             return this;
         }
 
         @NotNull
         @Override
-        public VertexConsumer setNormal(float x, float y, float z) {
+        public VertexConsumer normal(float x, float y, float z) {
             vertices[vertexIndex].normal(x, y, z);
             return this;
+        }
+
+        @Override
+        public void endVertex() {
+            // No-op
+        }
+
+        @Override
+        public void defaultColor(int r, int g, int b, int a) {
+            // No-op
+        }
+
+        @Override
+        public void unsetDefaultColor() {
+            // No-op
         }
 
         @Override

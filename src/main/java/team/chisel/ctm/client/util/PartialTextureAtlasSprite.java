@@ -48,9 +48,9 @@ public class PartialTextureAtlasSprite extends TextureAtlasSprite {
     }
 
     @Override
-    public float getU(float u) {
+    public float getU(double u) {
         float width = getU1() - getU0();
-        return getU0() + width * u;
+        return (float) (getU0() + width * u);
     }
 
     @Override
@@ -70,9 +70,9 @@ public class PartialTextureAtlasSprite extends TextureAtlasSprite {
     }
 
     @Override
-    public float getV(float v) {
+    public float getV(double v) {
         float height = getV1() - getV0();
-        return getV0() + height * v;
+        return (float) (getV0() + height * v);
     }
 
     @Override
